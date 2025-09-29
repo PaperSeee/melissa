@@ -73,6 +73,7 @@ export class StorageManager {
   }
 
   static setLastNotificationTime(timestamp: number): void {
+    if (typeof window === 'undefined') return;
     localStorage.setItem(STORAGE_KEYS.LAST_NOTIFICATION, timestamp.toString());
   }
 

@@ -25,6 +25,29 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Ajouter une fonction pour envoyer des notifications avec actions depuis le service worker
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SHOW_CHARGE_REMINDER') {
+    self.registration.showNotification('💡 Melissa, pense à charger !', {
+      body: 'Il est temps de brancher ton téléphone pour éviter la panne de batterie.',
+      icon: '/icon-192x192.png',
+      badge: '/icon-192x192.png',
+      tag: 'charge-reminder',
+      requireInteraction: true,
+      actions: [
+        {
+          action: 'charged',
+          title: '✅ C\'est fait !',
+        },
+        {
+          action: 'snooze',
+          title: '⏰ Plus tard (1h)',
+        }
+      ]
+    });
+  }
+});
+
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   

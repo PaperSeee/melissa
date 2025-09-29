@@ -41,17 +41,7 @@ export class NotificationManager {
       icon: '/icon-192x192.png',
       badge: '/icon-192x192.png',
       tag: 'charge-reminder',
-      requireInteraction: true,
-      actions: [
-        {
-          action: 'charged',
-          title: '✅ C\'est fait !',
-        },
-        {
-          action: 'snooze',
-          title: '⏰ Plus tard (1h)',
-        }
-      ]
+      requireInteraction: true
     });
 
     StorageManager.setLastNotificationTime(now);
@@ -86,3 +76,4 @@ export class NotificationManager {
     return null;
   }
 }
+       
