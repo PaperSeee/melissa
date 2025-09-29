@@ -46,7 +46,9 @@ export function HistoryTab() {
   const calculateStreak = (records: ChargeRecord[]): number => {
     if (records.length === 0) return 0
     
-    const dates = [...new Set(records.map(r => r.date))].sort().reverse()
+    // Fix: Use Array.from() instead of spread operator for older TypeScript compatibility
+    const uniqueDates = new Set(records.map(r => r.date))
+    const dates = Array.from(uniqueDates).sort().reverse()
     let streak = 0
     let currentDate = new Date()
     
@@ -204,4 +206,3 @@ export function HistoryTab() {
     </div>
   )
 }
-            

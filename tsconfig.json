@@ -18,10 +18,10 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
+    "target": "es2017",
+    "downlevelIteration": true,
     "plugins": [
       {
         "name": "next"

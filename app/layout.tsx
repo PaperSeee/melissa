@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   title: 'Melissa Charge Reminder',
   description: 'Application futuriste de rappel de charge pour Melissa',
   manifest: '/manifest.json',
-  themeColor: '#0891b2',
+  themeColor: '#0f172a',
   viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Charge Reminder'
   }
 }
@@ -30,9 +30,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className={inter.className}>
-        <div className="scan-line" />
         {children}
       </body>
     </html>
   )
+}
 }
