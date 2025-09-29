@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Battery, Edit3, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { StorageManager } from '@/lib/storage'
 
 interface BatteryInputProps {
   batteryLevel: number | null
@@ -18,6 +19,8 @@ export function BatteryInput({ batteryLevel, onBatteryChange }: BatteryInputProp
     const level = parseInt(inputValue)
     if (level >= 0 && level <= 100) {
       onBatteryChange(level)
+      // Sauvegarder dans le cache
+      StorageManager.setCurrentBatteryLevel(level)
       setIsEditing(false)
     }
   }

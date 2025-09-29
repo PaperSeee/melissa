@@ -63,17 +63,39 @@ export class NotificationManager {
   }
 
   static async getBatteryLevel(): Promise<number | null> {
+    // D'abord essayer de récupérer depuis le cache
+    const cachedLevel = StorageManager.getCurrentBatteryLevel();
+    if (cachedLevel !== null) {
+      return cachedLevel;
+    }
+
+    // Sinon essayer l'API Battery (si disponible)
     try {
       // @ts-ignore - Battery API n'est pas typée
       if ('getBattery' in navigator) {
         // @ts-ignore
         const battery = await navigator.getBattery();
-        return Math.round(battery.level * 100);
+        const level = Math.round(battery.level * 100);
+        StorageManager.setCurrentBatteryLevel(level);
+        return level;
       }
     } catch (error) {
       console.warn('Impossible d\'accéder au niveau de batterie:', error);
     }
-    return null;
+
+    // Valeur par défaut si aucune source disponible
+    const defaultLevel = 75;
+    StorageManager.setCurrentBatteryLevel(defaultLevel);
+    return defaultLevel;
+  }
+
+  static simulateBatteryDrain(): void {
+    const currentLevel = StorageManager.getCurrentBatteryLevel();
+    if (currentLevel !== null && currentLevel > 0) {
+      // Simuler une petite baisse (0.5% à 2% toutes les minutes)
+      const drain = Math.random() * 1.5 + 0.5;
+      const newLevel = Math.max(0, currentLevel - drain);
+      StorageManager.setCurrentBatteryLevel(Math.round(newLevel));
+    }
   }
 }
-       

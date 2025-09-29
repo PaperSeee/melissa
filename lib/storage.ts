@@ -10,12 +10,15 @@ export interface AppSettings {
   notifications: boolean;
   reminderInterval: number; // en minutes
   lastCharged?: string;
+  currentBatteryLevel?: number;
+  lastBatteryUpdate?: number;
 }
 
 const STORAGE_KEYS = {
   CHARGE_HISTORY: 'charge-history',
   SETTINGS: 'app-settings',
-  LAST_NOTIFICATION: 'last-notification'
+  LAST_NOTIFICATION: 'last-notification',
+  BATTERY_LEVEL: 'current-battery-level'
 } as const;
 
 export class StorageManager {
@@ -64,7 +67,38 @@ export class StorageManager {
   static updateSettings(settings: Partial<AppSettings>): void {
     const current = this.getSettings();
     const updated = { ...current, ...settings };
-    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+    }
+  }
+
+  static getCurrentBatteryLevel(): number | null {
+    if (typeof window === 'undefined') return null;
+    try {
+      const batteryData = localStorage.getItem(STORAGE_KEYS.BATTERY_LEVEL);
+      if (!batteryData) return null;
+      
+      const { level, timestamp } = JSON.parse(batteryData);
+      const now = Date.now();
+      const hoursPassed = (now - timestamp) / (1000 * 60 * 60);
+      
+      // Simuler une baisse de batterie : 3-7% par heure selon l'usage
+      const batteryDrain = Math.random() * 4 + 3; // Entre 3% et 7% par heure
+      const simulatedLevel = Math.max(0, level - (hoursPassed * batteryDrain));
+      
+      return Math.round(simulatedLevel);
+    } catch {
+      return null;
+    }
+  }
+
+  static setCurrentBatteryLevel(level: number): void {
+    if (typeof window === 'undefined') return;
+    const batteryData = {
+      level,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(STORAGE_KEYS.BATTERY_LEVEL, JSON.stringify(batteryData));
   }
 
   static getLastNotificationTime(): number {

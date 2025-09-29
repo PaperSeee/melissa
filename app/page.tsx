@@ -21,27 +21,47 @@ export default function Home() {
     // Timer pour l'heure
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
 
+    // Timer pour la simulation de batterie (toutes les minutes)
+    const batteryTimer = setInterval(() => {
+      NotificationManager.simulateBatteryDrain();
+      // Mettre à jour l'affichage de la batterie
+      const newLevel = StorageManager.getCurrentBatteryLevel();
+      if (newLevel !== null) {
+        setBatteryLevel(newLevel);
+      }
+    }, 60000); // Toutes les minutes
+
     // Charger les paramètres
-    const settings = StorageManager.getSettings()
-    setNotifications(settings.notifications)
-    setLastCharged(settings.lastCharged || null)
+    const settings = StorageManager.getSettings();
+    setNotifications(settings.notifications);
+    setLastCharged(settings.lastCharged || null);
 
     // Setup notifications
-    NotificationManager.requestPermission()
-    NotificationManager.scheduleReminders()
+    NotificationManager.requestPermission();
+    NotificationManager.scheduleReminders();
 
-    // Obtenir le niveau de batterie
+    // Obtenir le niveau de batterie (depuis le cache ou l'API)
     NotificationManager.getBatteryLevel().then(level => {
-      if (level !== null) setBatteryLevel(level)
-    })
+      if (level !== null) setBatteryLevel(level);
+    });
 
-    return () => clearInterval(timer)
+    return () => {
+      clearInterval(timer);
+      clearInterval(batteryTimer);
+    };
   }, [])
 
   const handleMarkAsCharged = async () => {
-    const record = StorageManager.addChargeRecord(batteryLevel || undefined)
-    StorageManager.updateSettings({ lastCharged: new Date().toISOString() })
-    setLastCharged(new Date().toISOString())
+    const record = StorageManager.addChargeRecord(batteryLevel || undefined);
+    StorageManager.updateSettings({ lastCharged: new Date().toISOString() });
+    setLastCharged(new Date().toISOString());
+    
+    // Remettre la batterie à 100% lors de la charge
+    if (batteryLevel !== null) {
+      const newLevel = Math.min(100, (batteryLevel || 0) + Math.random() * 20 + 10); // Charge de 10-30%
+      StorageManager.setCurrentBatteryLevel(Math.round(newLevel));
+      setBatteryLevel(Math.round(newLevel));
+    }
   }
 
   const toggleNotifications = (enabled: boolean) => {
